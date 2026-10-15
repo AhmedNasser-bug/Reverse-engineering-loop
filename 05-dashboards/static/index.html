@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reverse Engineering Loop | Real-Time Agent Harness</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
+
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-emerald-500/20">
+          ↻
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            Reverse Engineering Loop
+            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">Harness v1.0</span>
+          </h1>
+          <p class="text-xs text-slate-400">Engineered Agent Loops • Honcho Memory • OpenUI Dashboards</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <!-- Live Connection Status -->
+        <div class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-xs">
+          <span id="conn-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="conn-status" class="text-slate-300 font-medium">Real-Time Sync Active</span>
+        </div>
+
+        <button id="btn-step" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition flex items-center gap-1.5 shadow-md shadow-emerald-500/20">
+          <span>▶ Step Iteration</span>
+        </button>
+
+        <button id="btn-reset" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+          Reset Loop
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- KPI / Telemetry Row -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Current Iteration</div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="val-iteration" class="text-3xl font-extrabold text-white">0</span>
+          <span id="val-max-iteration" class="text-sm text-slate-500">/ 10</span>
+        </div>
+        <div class="mt-2 text-xs text-slate-400">Stop condition ceiling: 10 loops</div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Rubric Evaluation Score</div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="val-score" class="text-3xl font-extrabold text-cyan-400">0.000</span>
+          <span class="text-sm text-slate-500">/ 1.000</span>
+        </div>
+        <div class="mt-2 text-xs text-cyan-400/80">Target convergence: >= 0.950</div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Budget Consumption</div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span id="val-cost" class="text-3xl font-extrabold text-amber-400">$0.00</span>
+          <span class="text-sm text-slate-500">/ $5.00</span>
+        </div>
+        <div class="mt-2 text-xs text-slate-400">Real-time LLM token metering</div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Invariant Health</div>
+        <div class="mt-2 flex items-center gap-2">
+          <span id="badge-invariant" class="px-2.5 py-1 text-xs font-bold rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            VERIFIED_SAFE
+          </span>
+        </div>
+        <div class="mt-2 text-xs text-slate-400">0 Invariant violations detected</div>
+      </div>
+    </section>
+
+    <!-- Stage 2: Human Invariant Approval Gate -->
+    <section id="panel-approval" class="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/40 border border-indigo-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+        <div class="space-y-2 max-w-3xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 uppercase">Stage 2</span>
+            <h2 class="text-lg font-bold text-white">Human Approval Gate: Loop Invariant Contract</h2>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            <strong class="text-indigo-300">Mandatory Rule:</strong> The harness requires explicit human approval of the loop invariant before automated execution is unlocked.
+          </p>
+          <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl text-xs font-mono text-emerald-400">
+            <strong>Active Invariant:</strong> "<span id="txt-invariant">All intermediate and final claims must be strictly grounded in empirical execution artifacts; zero ungrounded hallucinations.</span>"
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+          <button id="btn-approve-invariant" class="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2 whitespace-nowrap">
+            <span>✓ Approve Invariant</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two-Column Layout: Real-Time Timeline & REA Reverse Engineering Insights -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Left Column: Iteration Timeline & Logs -->
+      <div class="space-y-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span>⏱</span> Iteration Timeline & Progress
+            </h3>
+            <span id="badge-loop-status" class="px-2.5 py-0.5 text-xs font-bold rounded bg-slate-800 text-slate-300 border border-slate-700">
+              READY
+            </span>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden mb-6">
+            <div id="bar-progress" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+
+          <!-- History Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="text-slate-400 uppercase bg-slate-950/50 border-b border-slate-800">
+                <tr>
+                  <th class="py-2.5 px-3">Iter</th>
+                  <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2.5 px-3">Score</th>
+                  <th class="py-2.5 px-3">Delta</th>
+                  <th class="py-2.5 px-3">Cost</th>
+                  <th class="py-2.5 px-3">Duration</th>
+                </tr>
+              </thead>
+              <tbody id="table-iterations-body" class="divide-y divide-slate-800/60 font-mono">
+                <tr>
+                  <td colspan="6" class="py-4 text-center text-slate-500 italic">No iterations executed yet. Click "Step Iteration" to begin.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- OpenUI Dynamic Generative Component Sandbox -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span>🎨</span> OpenUI Generative Widget Preview
+            </h3>
+            <span class="text-xs text-slate-400">Live SSE UI Streaming</span>
+          </div>
+          <div id="openui-sandbox" class="p-4 bg-slate-950 border border-slate-800 rounded-xl min-h-[160px] flex items-center justify-center text-xs text-slate-400">
+            Dynamic OpenUI components render here in real-time as the agent loop iterates.
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: REA Reverse Engineering & Rubric Evolution -->
+      <div class="space-y-6">
+        
+        <!-- REA Success Factor Dissection -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span>🔍</span> REA: Why Did It Succeed?
+            </h3>
+            <span class="text-xs px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">Causal Analysis</span>
+          </div>
+          <p class="text-xs text-slate-400 mb-4">
+            Reverse engineering deconstructs each passing iteration to discover the decisive mechanics behind success.
+          </p>
+
+          <div id="rea-insights-container" class="space-y-3">
+            <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl text-xs space-y-1.5">
+              <div class="text-slate-400 font-semibold">Baseline Hypothesis:</div>
+              <p class="text-slate-300">Prompt hydration via Honcho persistent memory provides 100% of invariant context without context window blowout.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Evaluation Rubric (RUBRIC.md) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span>📋</span> Self-Improving Evaluation Rubric
+            </h3>
+            <span class="text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">Dynamic Weights</span>
+          </div>
+
+          <div id="rubric-display" class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono text-slate-300 max-h-60 overflow-y-auto whitespace-pre-wrap">
+            Loading active rubric from 02-loop-engineering/RUBRIC.md...
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "honcho-mcp": {
+      "command": "node",
+      "args": ["03-orchestration/honcho/mcp/src/index.js"],
+      "env": {
+        "HONCHO_API_KEY": "${HONCHO_API_KEY:-local}",
+        "HONCHO_API_URL": "${HONCHO_API_URL:-http://localhost:8000/v1}"
+      },
+      "description": "Plastic Labs Honcho Memory Persistence MCP server"
+    },
+    "sequential-thinking": {
+      "command": "node",
+      "args": ["03-orchestration/mcp/sequential-thinking/dist/index.js"],
+      "description": "Sequential structured thinking for deep reasoning and reverse engineering hypothesis generation"
+    },
+    "chrome-devtools": {
+      "command": "node",
+      "args": ["03-orchestration/mcp/chrome-devtools/dist/index.js"],
+      "description": "Chrome DevTools MCP for web scraping, network inspection, and DOM reverse engineering"
+    },
+    "context7": {
+      "command": "node",
+      "args": ["03-orchestration/mcp/context7/dist/index.js"],
+      "description": "Context7 documentation and knowledge base indexing"
+    },
+    "github-mcp-server": {
+      "command": "node",
+      "args": ["03-orchestration/mcp/github-mcp-server/dist/index.js"],
+      "description": "GitHub MCP server for repository, pull request, and commit management"
+    }
+  }
+}

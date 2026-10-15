@@ -1,0 +1,22 @@
+{
+  "name": "reverse-engineering-loop",
+  "version": "1.0.0",
+  "description": "Agentic harness template for engineering self-correcting loops with stateful memory and reverse engineering feedback",
+  "type": "module",
+  "scripts": {
+    "start": "python harness.py serve",
+    "step": "python harness.py step",
+    "run:loop": "python harness.py run",
+    "status": "python harness.py status"
+  },
+  "keywords": [
+    "agentic-loop",
+    "reverse-engineering",
+    "honcho",
+    "openui",
+    "rea",
+    "ai-agents"
+  ],
+  "author": "AhmedNasser-bug",
+  "license": "MIT"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "rea-reverse-engineering-loop-bridge",
+  "version": "1.0.0",
+  "rea_core_path": "01-rea/src",
+  "settings": {
+    "max_hypotheses_per_trace": 5,
+    "falsification_confidence_threshold": 0.85,
+    "trace_sampling_rate": 1.0,
+    "auto_amend_rubric": true
+  },
+  "targets": {
+    "execution_traces": "artifacts/traces",
+    "iteration_outputs": "artifacts/iterations",
+    "reverse_engineering_reports": "artifacts/rea_reports"
+  }
+}

@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
+# Honcho Local Storage & Runtime Artifacts
+03-orchestration/honcho/storage/
+artifacts/traces/
+artifacts/iterations/
+artifacts/rea_reports/
+
+# OS & IDE Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
