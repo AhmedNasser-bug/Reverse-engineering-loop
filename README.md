@@ -25,6 +25,70 @@ Reverse-engineering-loop/
 
 ---
 
+## How It Works
+
+The harness orchestrates self-improving agent loops by coupling invariant governance, stateful memory, and causal reverse engineering:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        03 - ORCHESTRATION                              │
+│   Honcho Stateful Memory  •  Packaged Skills  •  MCP Tools  •  Rules   │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ Hydrates Context & Invariant
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        02 - LOOP ENGINEERING                           │
+│   Human Approval Gate ──> Invariant Verification ──> Iteration Control │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ Dispatches Tasks
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        04 - PROCESSING                                 │
+│   Priority Task Queue ──> Worker Agents (Web Scraping / Code / RTK)   │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ Outputs Artifacts & Traces
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        01 - REA REVERSE ENGINEERING                    │
+│   Deconstructs Traces ──> Discovers "Why Did It Succeed?"             │
+│   Updates RUBRIC.md   ──> Evolves Eval Agent ──> Records in Honcho     │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ Streams Telemetry & Events
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        05 - DASHBOARDS                                 │
+│   OpenUI Real-Time Widgets • Live Convergence Graph • Web Oversight    │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **Stateful Context Hydration**: At the start of each iteration, worker agents hydrate their prompt context from **Honcho**, retrieving prior iteration learnings, user dialectic profile, and the active loop invariant without token window bloat.
+2. **Loop Invariant Enforcement**: The loop manager enforces a formal invariant (agreed upon and signed off by the human in Stage 2). Stop conditions continuously check for target convergence, iteration limits, cost ceilings, and stagnation traps.
+3. **Multi-Tool Worker Execution**: Workers draw from the priority task queue, utilizing targeted tools (RTK for surgical token retrieval, Graphify for architecture diagrams, Firecrawl for scraping, and Chrome DevTools for browser automation).
+4. **Post-Iteration Reverse Engineering**: Instead of simply marking an iteration as "passed", the **REA engine** analyzes execution traces to identify the exact causal factor behind success (e.g., specific schema constraints, prompt reframing, or tool ordering).
+5. **Dynamic Rubric Annealing**: The **Evaluation Agent** translates discovered success factors into new weighted criteria in `RUBRIC.md`, updates its own system prompt, records findings into Honcho memory, and queues the next iteration's evaluation task.
+6. **Real-Time Generative Dashboard**: The loop streams telemetry, rubric revisions, and dynamic UI cards generated with **OpenUI** to the web dashboard (`http://localhost:8080`) via Server-Sent Events.
+
+---
+
+### Included Tools & Technologies
+
+| Tool / Repository | Role in Harness | Integration Path |
+| :--- | :--- | :--- |
+| **[REA](https://github.com/morluto/rea)** | Reverse engineers execution traces, binaries, and APIs to isolate causal success factors | `01-rea/` |
+| **[Loop Engineering](https://github.com/cobusgreyling/loop-engineering)** | Loop governance patterns, invariant verification, budget ceilings, and `loop-audit`/`loop-cost` tools | `02-loop-engineering/` |
+| **[Honcho](https://github.com/plastic-labs/honcho)** | Stateful dialectic memory library maintaining cross-iteration context and persistent learnings | `03-orchestration/honcho/` |
+| **[OpenUI](https://github.com/wandb/openui)** | Generative UI engine producing live interactive dashboard widgets and approval dialogs | `05-dashboards/openui/` |
+| **RTK (Rust Token Killer)** | Token-conservation skill replacing expensive full-file reads with surgical queries | `03-orchestration/skills/rtk/` |
+| **Graphify** | Architecture visualization engine generating Mermaid topology diagrams | `03-orchestration/skills/graphify/` |
+| **Firecrawl & Web Scraping** | High-throughput web scraping, deep research, and crawling skills | `03-orchestration/skills/firecrawl-scrape/` |
+| **Chrome DevTools MCP** | Browser automation, DOM inspection, network interception, and trace capture | `03-orchestration/mcp/chrome-devtools/` |
+| **Sequential Thinking MCP** | Structured hypothesis generation and falsification reasoning for REA | `03-orchestration/mcp/sequential-thinking/` |
+| **GitHub MCP Server** | Repository tracking, commit management, and remote inspection | `03-orchestration/mcp/github-mcp-server/` |
+| **Context7 MCP** | Knowledge base indexing and technical documentation lookup | `03-orchestration/mcp/context7/` |
+
+
+---
+
 ## User Flow
 1. **0. Setup**: User sets up the template project and hydrates environment variables.
 2. **1. Agreement Chat**: User chats with the agent to agree on loop goals, stop conditions, and initial evaluation rubric.
