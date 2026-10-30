@@ -12,6 +12,11 @@ import argparse
 from pathlib import Path
 from typing import Dict, Any, Optional
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 LOOP_ENG_DIR = Path(__file__).resolve().parent
 STATE_FILE = LOOP_ENG_DIR / "STATE.md"
@@ -97,6 +102,15 @@ class LoopManager:
 - **Last Evaluated**: Iteration {self.state['current_iteration']}
 """
         STATE_FILE.write_text(md_content, encoding="utf-8")
+
+    def reset(self) -> None:
+        """Resets the loop execution state back to pristine initial state."""
+        self.state["status"] = "READY"
+        self.state["current_iteration"] = 0
+        self.state["cumulative_cost_usd"] = 0.00
+        self.state["latest_rubric_score"] = 0.00
+        self.state["iterations"] = []
+        self._save_state()
 
     def approve_invariant(self, approved_by: str = "human_supervisor") -> None:
         """Approves the loop invariant, unlocking automated execution (Stage 2)."""

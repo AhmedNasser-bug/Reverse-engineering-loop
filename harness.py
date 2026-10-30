@@ -16,6 +16,12 @@ import json
 import time
 from pathlib import Path
 
+# Ensure UTF-8 output on all platforms
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 PROJECT_ROOT = Path(__file__).resolve().parent
 LOOP_ENG_DIR = PROJECT_ROOT / "02-loop-engineering"
 ORCH_DIR = PROJECT_ROOT / "03-orchestration"
@@ -157,6 +163,12 @@ def cmd_status(args):
     print(f"Latest Score:      {lm.state['latest_rubric_score']:.3f} / {lm.state['target_score']:.3f}")
     print(f"Budget Spent:      ${lm.state['cumulative_cost_usd']:.2f} / ${lm.state['budget_ceiling_usd']:.2f}")
 
+def cmd_reset(args):
+    """Reset loop execution state to pristine baseline."""
+    lm = get_loop_manager()
+    lm.reset()
+    print("✓ Loop state reset to initial baseline.")
+
 def cmd_serve(args):
     """Stage 4: Launch real-time web dashboard."""
     print("\n--- STAGE 4: REAL-TIME WEB DASHBOARD ---")
@@ -179,6 +191,7 @@ def main():
     subparsers.add_parser("step", help="Execute single loop iteration")
     subparsers.add_parser("run", help="Stage 3: Run loop to convergence")
     subparsers.add_parser("status", help="Show loop status")
+    subparsers.add_parser("reset", help="Reset loop execution state")
 
     serve_parser = subparsers.add_parser("serve", help="Stage 4: Launch web dashboard")
     serve_parser.add_argument("--port", type=int, default=8080, help="Web dashboard port")
@@ -195,6 +208,7 @@ def main():
         "step": cmd_step,
         "run": cmd_run,
         "status": cmd_status,
+        "reset": cmd_reset,
         "serve": cmd_serve
     }
     cmds[args.subcommand](args)
